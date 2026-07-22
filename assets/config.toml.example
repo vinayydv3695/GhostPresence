@@ -1,8 +1,24 @@
-# Contents of /ghostty-rpc/ghostty-rpc/assets/config.toml.example
+# Ghostty RPC Configuration File (~/.config/ghostty-rpc/config.toml)
 
 [general]
+# Refresh interval in seconds for Discord Rich Presence updates
 refresh_interval = 5
+
+# Show current working directory in status
 show_directory = true
-exclude = ["ls", "cd", "clear"]
-large_image = "ghostty_logo"
-small_image = "arch_linux"
+
+# Display mode for paths: "folder_only" (default), "full", or "hidden"
+path_display_mode = "folder_only"
+
+# Auto-detect and display active Git branch name and repository
+show_git_branch = true
+
+# Inactivity threshold in seconds before marking state as "Idle in terminal"
+idle_threshold_secs = 300
+
+# Blacklisted commands to censor from Discord presence for privacy
+blacklist_commands = ["sudo", "ssh", "op", "bw", "pass"]
+
+# Discord asset keys (uploaded in Discord Developer Portal)
+large_image = "ghostty"
+small_image = "terminal"

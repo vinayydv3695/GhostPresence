@@ -1,114 +1,104 @@
 # Ghostty RPC - Discord Rich Presence Integration
 
-Ghostty RPC is a Rust-based application that integrates with Discord's Rich Presence feature, providing real-time updates based on the user's terminal activity in the Ghostty terminal. This project continuously updates your Discord status with the last executed shell command, current working directory, and session start time.
+Ghostty RPC is a fast, Rust-based application that integrates with Discord's Rich Presence feature, providing real-time updates of your Ghostty terminal activity, Git branch & repository, active process, and idle status directly on Discord.
+
+![Ghostty Logo](assets/ghostty.png)
 
 ## Features
 
-- **Real-time Updates**: Automatically updates your Discord status with the last executed command and current working directory.
-- **Customizable**: Easily configurable through a TOML file.
-- **Systemd Integration**: Can be run as a user-level service for seamless operation.
-- **Cross-Platform**: Designed to work on various operating systems.
+- **Real-time Terminal Activity**: Displays current running process (`nvim`, `cargo`, `git`, `python`, `node`, `docker`, etc.).
+- **Git Branch & Repository Awareness**: Auto-detects Git repositories and active branch names (`git: main 🌿`).
+- **Dynamic Tool Icons**: Maps command names to Discord small image asset keys.
+- **Smart Idle Detection**: Automatically switches status to "Idle in terminal" after custom inactivity thresholds.
+- **Privacy & Censor Filters**: Redacts sensitive commands (`sudo`, `ssh`, `op`, `bw`) and supports path display modes (`folder_only`, `full`, `hidden`).
+- **Shell Integration Hooks**: Shell hook generator (`ghostty-rpc --install-hooks`) for Zsh, Bash, Fish, and Nushell.
+- **Official Logo Assets**: Included high-resolution SVG and 512x512 PNG Ghostty logo assets in `assets/`.
+- **Systemd Integration**: User-level service for automatic daemon background execution.
 
-## Installation
+---
 
-### AUR (Arch User Repository)
+## Official Logo Assets
 
-You can install Ghostty RPC from the AUR. Use an AUR helper like `yay` or `paru`:
+The official Ghostty logo assets are included in `assets/`:
+- **Vector Logo**: [assets/ghostty.svg](assets/ghostty.svg)
+- **High-Res PNG**: [assets/ghostty.png](assets/ghostty.png)
 
-```bash
-yay -S ghostty-rpc
-```
+> **Discord App Setup**: Upload `ghostty.png` as an asset named `ghostty` under your Discord Application (ID: `1429846275737518222`) in the Discord Developer Portal so it renders as the large image in Rich Presence.
 
-### Manual Installation
+---
 
-1. Clone the repository:
+## Quick Start & Shell Hook Setup
 
-   ```bash
-   git clone https://github.com/vinayydv3695/ghostty-rpc.git
-   cd ghostty-rpc
-   ```
-
-2. Build the project:
-
+1. Build & install `ghostty-rpc`:
    ```bash
    cargo build --release
-   ```
-
-3. Install the binary:
-
-   ```bash
    sudo cp target/release/ghostty-rpc /usr/local/bin/
    ```
 
-4. Copy the systemd service file:
-
+2. Print shell integration hooks for your shell:
    ```bash
-   cp assets/ghostty-rpc.service ~/.config/systemd/user/
+   ghostty-rpc --install-hooks
    ```
 
-5. Enable and start the service:
+3. Add the output hook snippet to your `~/.zshrc`, `~/.bashrc`, or `~/.config/fish/config.fish`.
 
+4. Check detected status:
    ```bash
-   systemctl --user enable ghostty-rpc.service
-   systemctl --user start ghostty-rpc.service
+   ghostty-rpc --status
    ```
+
+---
 
 ## CLI Usage
 
-You can run the application with various options:
-
 ```bash
-ghostty-rpc --config <path> --debug --once --interval <secs>
+ghostty-rpc [OPTIONS]
 ```
 
 ### Options
 
-- `--config <path>`: Specify the path to the configuration file.
-- `--debug`: Enable debug logging.
-- `--once`: Run the application once and exit.
-- `--interval <secs>`: Set the refresh interval for updating Discord presence.
+- `-c, --config <FILE>`: Specify path to a custom configuration TOML file.
+- `-d, --debug`: Enable verbose debug logging.
+- `-o, --once`: Run presence update once and exit.
+- `-i, --interval <SECS>`: Set refresh update interval in seconds.
+- `--status`: Print current detected Ghostty terminal status and exit.
+- `--install-hooks`: Print shell integration hook scripts.
 
-## Service Management
-
-To manage the Ghostty RPC service, use the following commands:
-
-- Start the service:
-
-  ```bash
-  systemctl --user start ghostty-rpc.service
-  ```
-
-- Stop the service:
-
-  ```bash
-  systemctl --user stop ghostty-rpc.service
-  ```
-
-- Check the status of the service:
-
-  ```bash
-  systemctl --user status ghostty-rpc.service
-  ```
+---
 
 ## Configuration
 
-The configuration file is located at `~/.config/ghostty-rpc/config.toml`. An example configuration file is provided in `assets/config.toml.example`.
+Configuration file is located at `~/.config/ghostty-rpc/config.toml`. See [assets/config.toml.example](assets/config.toml.example).
 
-## Contributing
+```toml
+[general]
+refresh_interval = 5
+show_directory = true
+path_display_mode = "folder_only"   # "folder_only", "full", or "hidden"
+show_git_branch = true
+idle_threshold_secs = 300
+blacklist_commands = ["sudo", "ssh", "op", "bw", "pass"]
+large_image = "ghostty"
+small_image = "terminal"
+```
 
-Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
+---
+
+## Service Management
+
+Manage the Ghostty RPC service via systemd:
+
+```bash
+# Enable & start user service
+systemctl --user enable ghostty-rpc.service
+systemctl --user start ghostty-rpc.service
+
+# Check service status
+systemctl --user status ghostty-rpc.service
+```
+
+---
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
-## Versioning
-
-Current version: 1.0.0
-
-## Badges
-
-[![Build Status](https://img.shields.io/github/workflow/status/yourusername/ghostty-rpc/CI)](https://github.com/yourusername/ghostty-rpc/actions)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-For more information, please refer to the documentation in the respective files.
+Licensed under the MIT License. See [LICENSE](LICENSE) for details.

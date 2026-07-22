@@ -1,10 +1,11 @@
 [Unit]
-Description=Ghostty RPC Discord Presence
-After=network-online.target
+Description=Ghostty RPC Discord Presence Service
+After=network.target graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/ghostty-rpc --debug
-Restart=on-failure
+ExecStart=/usr/bin/ghostty-rpc
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=default.target
