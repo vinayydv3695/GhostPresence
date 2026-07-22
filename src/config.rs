@@ -12,11 +12,12 @@ pub struct Config {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct GeneralConfig {
-    #[serde(default = "default_refresh_interval")]
-    pub refresh_interval: u64,
+    #[serde(default = "default_refresh_interval_ms")]
+    pub refresh_interval_ms: u64,
 
     #[serde(default = "default_show_directory")]
     pub show_directory: bool,
+
 
     #[serde(default = "default_path_display_mode")]
     pub path_display_mode: String,
@@ -33,6 +34,9 @@ pub struct GeneralConfig {
     #[serde(default)]
     pub blacklist_commands: Vec<String>,
 
+    #[serde(default = "default_client_id")]
+    pub client_id: String,
+
     #[serde(default = "default_large_image")]
     pub large_image: String,
 
@@ -40,7 +44,10 @@ pub struct GeneralConfig {
     pub small_image: String,
 }
 
-fn default_refresh_interval() -> u64 { 5 }
+fn default_client_id() -> String { "1429846275737518222".to_string() }
+
+
+fn default_refresh_interval_ms() -> u64 { 500 }
 fn default_show_directory() -> bool { true }
 fn default_path_display_mode() -> String { "folder_only".to_string() }
 fn default_show_git_branch() -> bool { true }
@@ -52,7 +59,8 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             general: GeneralConfig {
-                refresh_interval: default_refresh_interval(),
+                refresh_interval_ms: default_refresh_interval_ms(),
+
                 show_directory: default_show_directory(),
                 path_display_mode: default_path_display_mode(),
                 show_git_branch: default_show_git_branch(),
@@ -65,8 +73,10 @@ impl Default for Config {
                     "bw".to_string(),
                     "pass".to_string(),
                 ],
+                client_id: default_client_id(),
                 large_image: default_large_image(),
                 small_image: default_small_image(),
+
             },
         }
     }

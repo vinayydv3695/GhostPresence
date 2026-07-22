@@ -15,8 +15,10 @@ pub struct DiscordRpc {
 impl DiscordRpc {
     /// Creates a new instance of DiscordRpc.
     pub fn new(config: &Config) -> Self {
-        let mut client = Client::new(1429846275737518222);
+        let app_id = config.general.client_id.parse::<u64>().unwrap_or(1429846275737518222);
+        let mut client = Client::new(app_id);
         let _ = client.start();
+
 
         Self {
             client,

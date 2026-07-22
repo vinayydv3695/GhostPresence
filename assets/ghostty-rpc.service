@@ -3,9 +3,12 @@ Description=Ghostty RPC Discord Presence Service
 After=network.target graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/ghostty-rpc
+Type=simple
+ExecStart=%h/.local/bin/ghostty-rpc
 Restart=always
-RestartSec=5
+RestartSec=3
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+PassEnvironment=XDG_RUNTIME_DIR DISPLAY WAYLAND_DISPLAY
 
 [Install]
 WantedBy=default.target

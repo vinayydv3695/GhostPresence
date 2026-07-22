@@ -110,12 +110,12 @@ fn main() {
     let _ = flag::register(SIGHUP, Arc::clone(&term));
 
     // Daemon loop
-    let interval = matches
+    let interval_ms = matches
         .get_one::<String>("interval")
-        .and_then(|s| s.parse::<u64>().ok())
-        .unwrap_or(config.general.refresh_interval);
+        .and_then(|s| s.parse::<f64>().ok().map(|sec| (sec * 1000.0) as u64))
+        .unwrap_or(config.general.refresh_interval_ms);
 
-    info!("Starting Ghostty RPC daemon (interval: {}s)...", interval);
+    info!("Starting Ghostty RPC daemon (refresh interval: {}ms)...", interval_ms);
 
     loop {
         // Read current terminal activity
@@ -125,30 +125,24 @@ fn main() {
         discord_rpc.update_state(&state);
 
         // Log update summary
-        info!(
+        log::debug!(
             "Updated Discord RPC -> Cmd: '{}' | CWD: '{}' | Git: {}",
             state.command,
             state.display_cwd,
             state.git_branch.as_deref().unwrap_or("none")
         );
 
-        if term.load(Ordering::Relaxed) {
-            info!("Termination signal received, exiting Ghostty RPC.");
-            break;
-        }
-
-        if matches.get_flag("once") {
-            break;
-        }
-
-        for _ in 0..interval {
+        if term.load(Ordering::Relaxed) || matches.get_flag("once") {
             if term.load(Ordering::Relaxed) {
-                break;
+                info!("Termination signal received, exiting Ghostty RPC.");
             }
-            thread::sleep(Duration::from_secs(1));
+            break;
         }
+
+        thread::sleep(Duration::from_millis(interval_ms));
     }
 }
+
 
 /// Print shell integration hook scripts for Zsh, Bash, Fish, and Nushell.
 fn print_shell_hooks() {
