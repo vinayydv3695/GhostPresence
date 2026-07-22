@@ -1,4 +1,4 @@
-# Maintainer: Vinay Yadav <vinayydv343@example.com>
+# Maintainer: Vinay <vinayydv343@gmail.com>
 pkgname=ghostty-rpc
 pkgver=1.1.0
 pkgrel=1
@@ -12,29 +12,17 @@ source=("$pkgname::git+$url.git")
 sha256sums=('SKIP')
 
 build() {
-    if [ -d "$srcdir/$pkgname" ]; then
-        cd "$srcdir/$pkgname"
-    else
-        cd "$startdir"
-    fi
+    cd "$srcdir/$pkgname"
     cargo build --release --locked
 }
 
 check() {
-    if [ -d "$srcdir/$pkgname" ]; then
-        cd "$srcdir/$pkgname"
-    else
-        cd "$startdir"
-    fi
+    cd "$srcdir/$pkgname"
     cargo test --release --locked || true
 }
 
 package() {
-    if [ -d "$srcdir/$pkgname" ]; then
-        cd "$srcdir/$pkgname"
-    else
-        cd "$startdir"
-    fi
+    cd "$srcdir/$pkgname"
     
     # Install binary
     install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
