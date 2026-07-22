@@ -30,9 +30,12 @@ impl DiscordRpc {
     pub fn update_state(&mut self, state: &TerminalState) {
         let details = if state.is_idle {
             "Idle in terminal".to_string()
+        } else if matches!(state.command.as_str(), "zsh" | "bash" | "fish" | "nu" | "sh") {
+            format!("Active in {}", state.command)
         } else {
             format!("Running {}", state.command)
         };
+
 
         let presence_state = match (&state.git_branch, &state.git_repo) {
             (Some(branch), Some(repo)) => format!("{} (git: {})", repo, branch),

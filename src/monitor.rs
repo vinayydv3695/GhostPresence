@@ -114,6 +114,12 @@ pub fn get_terminal_state(config: &Config) -> TerminalState {
 /// Checks if command contains blacklisted or excluded keywords and censors it if necessary.
 fn filter_blacklisted_command(cmd: &str, blacklist: &[String], exclude: &[String]) -> String {
     let lower = cmd.to_lowercase();
+
+    // Ignore self-invocation daemon commands so status doesn't get stuck on daemon launcher
+    if lower.contains("ghostty-rpc") || lower.contains("cargo run") {
+        return "zsh".to_string();
+    }
+
     for item in blacklist.iter().chain(exclude.iter()) {
         if !item.is_empty() && (lower.starts_with(&item.to_lowercase()) || lower.contains(&format!(" {} ", item.to_lowercase()))) {
             return "[protected command]".to_string();
@@ -121,6 +127,7 @@ fn filter_blacklisted_command(cmd: &str, blacklist: &[String], exclude: &[String
     }
     cmd.to_string()
 }
+
 
 /// Retrieves Git branch name and repository folder name if path is inside a Git repo.
 fn get_git_info(cwd: &str, enabled: bool) -> (Option<String>, Option<String>) {
